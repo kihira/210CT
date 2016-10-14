@@ -2,6 +2,7 @@
 #include <vector>
 #include <stdio.h> // printf
 #include <stdexcept>
+#include <tuple>
 
 using namespace std;
 
@@ -86,6 +87,30 @@ public:
     Matrix(const int rows, const int columns): mRows(rows), mColumns(columns), mMatrix(rows * columns, 0) {}
 };
 
+typedef tuple<int, int, int> COO;
+
+class SparseMatrix
+{
+private:
+    vector<int> values;
+    vector<int> row_indexes;
+    vector<int> col_indexes;
+    int rows;
+    int cols;
+public:
+    SparseMatrix(vector<int> values, vector<int> row_indexes, vector<int> col_indexes, int rows, int cols) : values(values), row_indexes(row_indexes), col_indexes(col_indexes), rows(rows), cols(cols) {}
+    int get(int row, int col)
+    {
+        for (int index = 0; index < row_indexes.size(); index++)
+        {
+            if (row_indexes[index] == row && col_indexes[index] == col)
+            {
+                return values[index];
+            }
+        }
+    }
+};
+
 int main()
 {
     cout << "Advanced Task 1" << endl;
@@ -104,6 +129,15 @@ int main()
     cout << "Aliens count after " << days << " days: " << alienCount << endl << endl;
 
     cout << "Advanced Task 2" << endl;
+
+    vector<int> values;
+    vector<int> row_indexes;
+    vector<int> col_indexes;
+    SparseMatrix m(values, row_indexes, col_indexes, 3, 3);
+
+    cout << m.get(1, 1);
+
+        /*
     Matrix matrix(3, 3);
     int i = 0;
     for (int row = 0; row < matrix.mRows; row++)
@@ -136,6 +170,7 @@ int main()
     cout << "Multiplication: " << endl;
     Matrix out3 = matrix * matrix2;
     out3.print();
+    */
 
     return 0;
 }
