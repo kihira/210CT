@@ -113,21 +113,19 @@ public:
         vector<int> values;
         vector<int> row_indexes;
         vector<int> col_indexes;
-        for (int row = 1; row <= rows; row++)
+        for (int i = 0; i < rows * cols; i++)
         {
-            for (int col = 1; col <= cols; col++)
+            int row = i / rows + 1;
+            int col = i % cols + 1;
+            int val = get(row, col) + rhs.get(row, col);
+            if (val != 0)
             {
-                int val = get(row, col) + rhs.get(row, col);
-                if (val != 0)
-                {
-                    values.push_back(val);
-                    row_indexes.push_back(row);
-                    col_indexes.push_back(col);
-                }
+                values.push_back(val);
+                row_indexes.push_back(row);
+                col_indexes.push_back(col);
             }
         }
-        SparseMatrix m(rows, cols, values, row_indexes, col_indexes);
-        return m;
+        return SparseMatrix(rows, cols, values, row_indexes, col_indexes);
     }
     SparseMatrix operator-(SparseMatrix& rhs)
     {
@@ -138,51 +136,48 @@ public:
         vector<int> values;
         vector<int> row_indexes;
         vector<int> col_indexes;
-        for (int row = 1; row <= rows; row++)
+        for (int i = 0; i < rows * cols; i++)
         {
-            for (int col = 1; col <= cols; col++)
+            int row = i / rows + 1;
+            int col = i % cols + 1;
+            int val = get(row, col) - rhs.get(row, col);
+            if (val != 0)
             {
-                int val = get(row, col) - rhs.get(row, col);
-                if (val != 0)
+                values.push_back(val);
+                row_indexes.push_back(row);
+                col_indexes.push_back(col);
+            }
+        }
+        return SparseMatrix(rows, cols, values, row_indexes, col_indexes);
+    }
+    SparseMatrix operator*(SparseMatrix& rhs)
+    {
+        if (cols != rhs.rows)
+        {
+            throw range_error("Column count on first matrix does not match row count on second matrix");
+        }
+        vector<int> values;
+        vector<int> row_indexes;
+        vector<int> col_indexes;
+        for (int row = 1; row <= rhs.rows; row++)
+        {
+            for (int colRHS = 1; colRHS <= rhs.cols; colRHS++)
+            {
+                int total = 0;
+                for (int col = 1; col <= cols; col++)
                 {
-                    values.push_back(val);
+                    total += get(row, col) * rhs.get(col, colRHS);
+                }
+                if (total != 0)
+                {
+                    values.push_back(total);
                     row_indexes.push_back(row);
-                    col_indexes.push_back(col);
+                    col_indexes.push_back(colRHS);
                 }
             }
         }
-        SparseMatrix m(rows, cols, values, row_indexes, col_indexes);
-        return m;
+        return SparseMatrix(rhs.rows, cols, values, row_indexes, col_indexes);
     }
-//    SparseMatrix operator*(SparseMatrix& rhs)
-//    {
-//        if (rows != rhs.rows || cols != rhs.cols)
-//        {
-//            throw range_error("Matrices are different sizes");
-//        }
-//        vector<int> values;
-//        vector<int> row_indexes;
-//        vector<int> col_indexes;
-//        for (int row = 1; row <= rhs.rows; row++)
-//        {
-//            for (int colRHS = 1; colRHS <= rhs.cols; colRHS++)
-//            {
-//                int total = 0;
-//                for (int col = 1; col <= cols; col++)
-//                {
-//                    total += get(row, col) * get(col, colRHS);
-//                }
-//                if (total != 0)
-//                {
-//                    values.push_back(total);
-//                    row_indexes.push_back(row);
-//                    col_indexes.push_back(colRHS);
-//                }
-//            }
-//        }
-//        SparseMatrix m(rows, cols, values, row_indexes, col_indexes);
-//        return m;
-//    }
     int get(int row, int col)
     {
         if (row > rows || col > cols)
