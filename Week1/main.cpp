@@ -104,15 +104,13 @@ public:
     vector<int> values;
     vector<int> row_indexes;
     vector<int> col_indexes;
+    // O(n*3)
     SparseMatrix operator+(SparseMatrix& rhs)
     {
         if (rows != rhs.rows || cols != rhs.cols)
         {
             throw range_error("Matrices are different sizes");
         }
-        vector<int> values;
-        vector<int> row_indexes;
-        vector<int> col_indexes;
         for (int i = 0; i < rows * cols; i++)
         {
             int row = i / rows + 1;
@@ -127,6 +125,7 @@ public:
         }
         return SparseMatrix(rows, cols, values, row_indexes, col_indexes);
     }
+    // O(n*3)
     SparseMatrix operator-(SparseMatrix& rhs)
     {
         if (rows != rhs.rows || cols != rhs.cols)

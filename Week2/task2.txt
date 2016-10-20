@@ -1,0 +1,12 @@
+N_FOLD_CARTESIAN(FIRST_SET, SETS)
+    sets <- SETS
+    IF sets.length = 0
+        return FIRST_SET
+    set <- sets[0]
+    FOR i <- 0 to set.length
+        value <- set[i]
+        list <- FIRST_SET[i]
+        add value to list
+        FIRST_SET[i] <- list
+    remove set from sets
+    RETURN N_FOLD_CARTESIAN(FIRST_SET, sets)
