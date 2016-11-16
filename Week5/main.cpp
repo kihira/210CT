@@ -1,5 +1,5 @@
 #include <iostream>
-#include <array>
+#include <vector>
 
 using namespace std;
 
@@ -9,28 +9,28 @@ struct elem {
     elem *next;
 };
 
-template <typename N, size_t s>
+template <typename N>
 class CircularLinkedList
 {
 public:
-    elem<N> *first;
-    elem<N> *last;
-//    void remove(elem<N> *e)
-//    {
-//        elem<N> *curr = first;
-//        while (true)
-//        {
-//            if (curr->next == e)
-//            {
-//                curr->next = curr->next->next;
-//                delete &curr->next;
-//                break;
-//            }
-//            curr = curr->next;
-//        }
-//        //delete curr;
-//    }
-    CircularLinkedList(array<N, s> input)
+    elem<N>* first;
+    elem<N>* last;
+    void remove(elem<N>* e)
+    {
+        elem<N>* curr = first;
+        while (true)
+        {
+            if (curr->next == e)
+            {
+                elem<N>* next = curr->next->next; // need to copy to prevent issues
+                curr->next = next;
+                delete e;
+                break;
+            }
+            curr = curr->next;
+        }
+    }
+    CircularLinkedList(vector<N> input)
     {
         this->first = new elem<N>;
         this->first->value = input[0];
@@ -45,8 +45,8 @@ public:
             this->last = in;
         }
     }
-//    ~CircularLinkedList()
-//    {
+    ~CircularLinkedList()
+    {
 //        elem<N>* curr = this->first;
 //        while (true)
 //        {
@@ -54,14 +54,14 @@ public:
 //            delete curr;
 //            curr = temp;
 //        }
-//    }
+    }
 };
 
 int main()
 {
-    //array<string, 7> a = {"Eliot", "Charlie", "Zoe", "Alex", "Sophie", "Bob", "Joseph"};
-    array<string, 5> a = {"Eliot", "Charlie", "Zoe", "Alex", "Sophie"};
-    CircularLinkedList<string, 5> list(a);
+    //vector<string> a = {"Eliot", "Charlie", "Zoe", "Alex", "Sophie", "Bob", "Joseph"};
+    vector<string> a = {"Eliot", "Charlie", "Zoe", "Alex", "Sophie"};
+    CircularLinkedList<string> list(a);
 
     elem<string>* value = list.last;
     elem<string>* prev = list.last;
@@ -72,10 +72,7 @@ int main()
             prev = value;
             value = value->next;
         }
-        elem<string>* temp = value->next;
         list.remove(value->next);
-        //value->next = value->next->next; // Then "remove" it from the chain
-        delete temp;
     }
     cout << value->value << endl; // This is the final one remaining
 }
