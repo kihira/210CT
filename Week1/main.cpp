@@ -1,6 +1,8 @@
 #include <iostream>
 #include <vector>
 #include <sstream>
+#include <cstdio>
+#include <cstdlib>
 
 using namespace std;
 
