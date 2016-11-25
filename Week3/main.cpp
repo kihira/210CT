@@ -11,7 +11,7 @@ struct cube
 {
     int edge = 0;
     int colour = 0;
-} blank;
+};
 
 vector<cube> merge(vector<cube> cubes1, vector<cube> cubes2)
 {
@@ -65,16 +65,18 @@ vector<cube> merge_sort(vector<cube> cubes)
 
 int main()
 {
-    cout << "Advanced Task 1" << endl;
+    cout << "Advanced Task 1 - Cube sorting" << endl;
     vector<cube> cubes;
     srand(time(NULL));
+
+    cout << "Cubes (Edge, Colour):" << endl;
     for (int i = 0; i < CUBES; i++)
     {
         cube c;
         c.edge = rand() % EDGE_MAX + 1;
         c.colour = rand() % COLOUR_MAX;
         cubes.push_back(c);
-        cout << c.edge << ", ";
+        cout << "(" << c.edge << ", " << c.colour << ") ";
     }
     cout << endl;
 
@@ -82,7 +84,7 @@ int main()
     vector<cube> final;
     int prevEdge = -1;
     int prevCol = -1;
-    for (int i = 0; i < sorted.size(); i++)
+    for (int i = 0; i < sorted.size(); i++) // remove cubes that cannot be used
     {
         cube c = sorted[i];
         if (c.edge != prevEdge && c.colour != prevCol)
@@ -93,9 +95,8 @@ int main()
         }
     }
 
-    for (int i = final.size() - 1; i >= 0; i--)
+    for (cube c : final)
     {
-        cube c = final[i];
         cout << "E: " << c.edge << " C: " << c.colour << endl;
     }
 
