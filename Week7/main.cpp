@@ -13,7 +13,7 @@ struct vertice
     // used for tarjans algo for checking for strong connection
     int index = -1;
     int lowlink = -1;
-    bool onStack = false;
+    bool inStack = false;
     vertice(int value) : value(value) {}
 };
 
@@ -22,132 +22,129 @@ class Graph
 private:
     map<int, vertice*> vertices; // can use default map instead of unordered as a sorted map is probably good
 public:
-    vertice* addNode(int value, vertice* n) { return addNode(value, vector<vertice*>(1, n)); }
-    vertice* addNode(int value, vector<vertice*> adjacent = vector<vertice*>())
+    vertice* addVertice(int value, vertice *n) { return addVertice(value, vector<vertice *>(1, n)); }
+    vertice* addVertice(int value, vector<vertice *> edges = vector<vertice *>())
     {
-        if (vertices.count(value) > 0)
+        if (this->vertices.count(value) > 0)
         {
             throw invalid_argument("Vertice already exists with value");
         }
         vertice* n = new vertice(value);
-        n->vertices = adjacent;
-        for (vertice* adj : adjacent)
+        n->vertices = edges;
+        for (vertice* adj : edges)
         {
             adj->vertices.push_back(n);
         }
 
-        vertices[value] = n;
+        this->vertices[value] = n;
 
         return n;
     }
     bool exists(int value)
     {
-        return vertices.count(value) > 0;
+        return this->vertices.count(value) > 0;
     }
-    vertice* getNode(int value)
+    vertice* getVertice(int value)
     {
-        return vertices[value];
+        return this->vertices[value];
     }
-    bool isPath(int v, int w, ofstream& outFile) // recursive search
+    // Can take in vertices as int as we can safely assume each vertex has unique int
+    bool isPath(int start, int target, ofstream& outFile) // recursive search
     {
-        vertice* curr = vertices[v];
+        vertice* curr = this->vertices[start];
         vector<vertice*> verticesToSearch;
 
-        outFile << v << endl;
+        outFile << start << endl;
 
-        for (vertice* n : curr->vertices)
+        for (vertice* v : curr->vertices)
         {
-            if (n->value == w)
+            if (v->value == target)
             {
                 return true;
             }
-            else if (n->vertices.size() > 0)
+            else if (v->vertices.size() > 0)
             {
-                verticesToSearch.push_back(n); // scan over all links first to see if we have a direct connection
+                verticesToSearch.push_back(v); // scan over all links start to see if we have a direct connection
             }
         }
         for (vertice* n : verticesToSearch)
         {
-            return isPath(n->value, w, outFile); // now we know we don't have a direct connection, search links
+            return isPath(n->value, target, outFile); // now we know we don't have a direct connection, search links
         }
 
         return false;
     }
-    // uses tarjans algorithm which is O(v + e)
-    // tarjans algo
-    bool strongconnect(vertice* v, int* index, queue<vertice*>* S)
+    // uses tarjans algorithm which is O(vertices + edges)
+    bool strong_connect(vertice *curr, int *index, queue<vertice *> *stack)
     {
-        v->index = *index;
-        v->lowlink = *index;
+        curr->index = *index;
+        curr->lowlink = *index;
         index = index + 1;
-        S->push(v);
-        v->onStack = true;
+        stack->push(curr);
+        curr->inStack = true;
 
-        for (vertice* edge : v->vertices)
+        for (vertice* edge : curr->vertices)
         {
-            if (edge->index == -1)
+            if (edge->index == -1) // Haven't checked this vertice yet so check
             {
-                strongconnect(edge, index, S);
-                v->lowlink = min(v->lowlink, edge->lowlink);
+                strong_connect(edge, index, stack);
+                curr->lowlink = min(curr->lowlink, edge->lowlink);
             }
-            else if (edge->onStack)
+            else if (edge->inStack)
             {
-                edge->lowlink = min(v->lowlink, edge->index);
+                curr->lowlink = min(curr->lowlink, edge->index); // Check whether the edge is our new "base"
             }
         }
 
-        if (v->lowlink == v->index)
+        // Base vertice so need to remove the stuff we have checked from the stack so we can start a new strongly connected component
+        if (curr->lowlink == curr->index)
         {
-            vector<vertice*> scc;
-            vertice* w;
+            vertice* v;
             do
             {
-                w = S->front();
-                S->pop();
-                w->onStack = false;
-                scc.push_back(w);
+                v = stack->front();
+                stack->pop();
+                v->inStack = false;
             }
-            while(w != v);
-            for (vertice* i : scc)
-            {
-                cout << i->value << endl;
-            }
+            while(v != curr); // need do-while so we at least evaluate front of the queue (in case of 1 size components)
             return true;
         }
         return false;
     }
-    bool isConnected() // returns true is sccCount is 0 as everything is one component
+    // breaks style convention to fit in with coursework requirements
+    bool isConnected()
     {
+        // Using pointers to help prevent class variables as we can just pass pointers around
         int* index = new int(0);
-        queue<vertice*>* S = new queue<vertice*>();
+        queue<vertice*>* stack = new queue<vertice*>();
         int sccCount = 0; // strongly connected components count
         for (auto v : vertices)
         {
             if (v.second->index == -1)
             {
-                if (strongconnect(v.second, index, S)) sccCount++;
+                if (strong_connect(v.second, index, stack)) sccCount++;
             }
         }
         delete index;
-        delete S;
+        delete stack;
         cout << (sccCount == 0 ? "yes" : "no") << endl;
-        return sccCount == 0;
+        return sccCount == 0; // sccCount is 0 when everything is in one component
     }
     Graph() {}
-    Graph(vector<int> v, vector<pair<int, int>> edges)
+    Graph(vector<int> vertices, vector<pair<int, int>> edges)
     {
-        for (int i : v) // setup vertices
+        for (int i : vertices) // setup vertices
         {
-            vertices[i] = new vertice(i);
+            this->vertices[i] = new vertice(i);
         }
-        for (pair<int, int> i : edges) // setup edges
+        for (pair<int, int> edge : edges) // setup edges
         {
-            if (vertices.count(i.first) == 0 || vertices.count(i.second) == 0)
+            if (this->vertices.count(edge.first) == 0 || this->vertices.count(edge.second) == 0)
             {
                 throw invalid_argument("A vertice specified in edge doesn't exist");
             }
-            vertice* first = vertices[i.first];
-            vertice* second = vertices[i.second];
+            vertice* first = this->vertices[edge.first];
+            vertice* second = this->vertices[edge.second];
             first->vertices.push_back(second);
             second->vertices.push_back(first);
         }
@@ -163,11 +160,22 @@ public:
 
 int main()
 {
-    cout << "Advanced Task 1 - Unweighted, Undirected graph" << endl;
+    cout << "Advanced Task 1 - Unweighted, Undirected graph" << endl << endl;
 
     Graph graph({1, 2, 3, 4, 5}, {{1, 2}, {2, 3}, {3, 1}});
+
+    cout << "Checking for a path" << endl;
     ofstream outFile("search.txt");
-    //cout << graph.isPath(3, 1, outFile);
+    int first, second;
+
+    cout << "First node: ";
+    cin >> first;
+    cout << "Second node: ";
+    cin >> second;
+
+    cout << (graph.isPath(first, second, outFile) ? "Path found" : "No path found") << endl << endl;
     outFile.close();
+
+    cout << "Is graph strongly connected? ";
     graph.isConnected();
 }

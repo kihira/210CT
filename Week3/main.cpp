@@ -16,7 +16,6 @@ struct cube
 vector<cube> merge(vector<cube> cubes1, vector<cube> cubes2)
 {
     vector<cube> result;
-    result.reserve(cubes1.size() + cubes2.size()); // Reserve memory for total size for performance improvements on large merges
 
     while (cubes1.size() != 0 && cubes2.size() != 0) // Keep running as long as there are elements in both
     {
