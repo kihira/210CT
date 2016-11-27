@@ -15,52 +15,54 @@ struct cube
 
 vector<cube> merge(vector<cube> cubes1, vector<cube> cubes2)
 {
-    vector<cube> c;
+    vector<cube> result;
+    result.reserve(cubes1.size() + cubes2.size()); // Reserve memory for total size for performance improvements on large merges
 
-    while (cubes1.size() != 0 && cubes2.size() != 0)
+    while (cubes1.size() != 0 && cubes2.size() != 0) // Keep running as long as there are elements in both
     {
 
         if (cubes1[0].edge > cubes2[0].edge)
         {
-            c.push_back(cubes2[0]);
+            result.push_back(cubes2[0]);
             cubes2.erase(cubes2.begin()); // remove first element
         }
         else
         {
-            c.push_back(cubes1[0]);
+            result.push_back(cubes1[0]);
             cubes1.erase(cubes1.begin()); // remove first element
         }
     }
 
-    // Cleanup remaining elements
+    // Split up remaining elements
     while (cubes1.size() != 0)
     {
-        c.push_back(cubes1[0]);
+        result.push_back(cubes1[0]);
         cubes1.erase(cubes1.begin());
     }
 
     while (cubes2.size() != 0)
     {
-        c.push_back(cubes2[0]);
+        result.push_back(cubes2[0]);
         cubes2.erase(cubes2.begin());
     }
 
-    return c;
+    return result;
 }
 
 vector<cube> merge_sort(vector<cube> cubes)
 {
     if (cubes.size() == 1) return cubes;
 
-    vector<cube> l1;
-    vector<cube> l2;
-    l1.assign(cubes.begin(), cubes.begin() + (cubes.size() / 2));
-    l2.assign(cubes.begin() + (cubes.size() / 2), cubes.end());
+    vector<cube> first;
+    vector<cube> second;
+    first.assign(cubes.begin(), cubes.begin() + (cubes.size() / 2)); // Take values from left of midpoint
+    second.assign(cubes.begin() + (cubes.size() / 2), cubes.end()); // Take values from right of midpoint (inclusive)
 
-    l1 = merge_sort(l1);
-    l2 = merge_sort(l2);
+    // Keep splitting until vectors are just size 1
+    first = merge_sort(first);
+    second = merge_sort(second);
 
-    return merge(l1, l2);
+    return merge(first, second);
 }
 
 int main()
@@ -78,7 +80,7 @@ int main()
         cubes.push_back(c);
         cout << "(" << c.edge << ", " << c.colour << ") ";
     }
-    cout << endl;
+    cout << endl << endl;
 
     vector<cube> sorted = merge_sort(cubes);
     vector<cube> final;
@@ -95,6 +97,7 @@ int main()
         }
     }
 
+    cout << "Tower (smallest on top)" << endl;
     for (cube c : final)
     {
         cout << "E: " << c.edge << " C: " << c.colour << endl;
