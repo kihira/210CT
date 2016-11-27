@@ -3,11 +3,9 @@
 using namespace std;
 
 // Find n critical value without looping
+// Used only for testing/confirming
 void critical_value_smart(pair<int, int> first, pair<int, int> second)
 {
-    cout << "First equation is " << first.first << "n + " << first.second << endl;
-    cout << "Second equation is " << second.first << "n + " << second.second << endl;
-
     int value = (second.second - first.second) / (first.first - second.first);
     if (value <= 0)
     {
@@ -28,6 +26,7 @@ void critical_value_smart(pair<int, int> first, pair<int, int> second)
 
 void critical_value(pair<int, int> first, pair<int, int> second)
 {
+     // Store the first values so we know which one was originally faster
     int firstVal1 = first.first * 1 + first.second;
     int firstVal2 = second.first * 1 + second.second;
     size_t n = 2;
@@ -52,7 +51,10 @@ void critical_value(pair<int, int> first, pair<int, int> second)
 
 int main()
 {
+    cout << "Critical value for comparing 5n+10 vs 1n+50" << endl;
     critical_value(pair<int, int>(5, 10), pair<int, int>(1, 50));
-    critical_value(pair<int, int>(1, 50), pair<int, int>(2, 0));
+    cout << endl << "Critical value calculated the smart way:" << endl;
+    critical_value_smart(pair<int, int>(5, 10), pair<int, int>(1, 50));
+
     return 0;
 }
