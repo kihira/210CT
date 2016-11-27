@@ -6,103 +6,11 @@
 
 using namespace std;
 
-class Matrix
+class SparseMatrix
 {
 public:
     const int rows;
     const int cols;
-    string to_string()
-    {
-        stringstream ss;
-        for (int row = 1; row <= rows; row++)
-        {
-            for (int col = 1; col <= cols; col++)
-            {
-                printf("%i\t", get(row, col)); // Use printf for formatting (force 3 digits)
-            }
-            cout << endl;
-        }
-        return ss.str();
-    }
-    virtual int get(int row, int col) = 0;
-    Matrix(const int rows, const int cols) : rows(rows), cols(cols) {}
-};
-
-class DenseMatrix : public Matrix
-{
-public:
-    vector<int> mMatrix;
-    int index(int row, int col)
-    {
-        return row * cols + col;
-    }
-    int* operator[](int row)
-    {
-        return &mMatrix[cols * row]; // return pointer to int array from this position
-    }
-    int get(int row, int col)
-    {
-        return mMatrix[index(row, col)];
-    }
-    DenseMatrix operator+(const DenseMatrix& rhs)
-    {
-        if (mMatrix.size() != rhs.mMatrix.size())
-        {
-            throw range_error("Matrices are different sizes");
-        }
-        DenseMatrix output(rhs.rows, rhs.cols);
-        for (int row = 0; row < output.rows; row++)
-        {
-            for (int col = 0; col < output.cols; col++)
-            {
-                output.mMatrix[index(row, col)] = mMatrix[index(row, col)] + rhs.mMatrix[index(row, col)];
-            }
-        }
-        return output;
-    }
-    DenseMatrix operator-(const DenseMatrix& rhs)
-    {
-        if (mMatrix.size() != rhs.mMatrix.size())
-        {
-            throw range_error("Matrices are different sizes");
-        }
-        DenseMatrix output(rhs.rows, rhs.cols);
-        for (int row = 0; row < output.rows; row++)
-        {
-            for (int col = 0; col < output.cols; col++)
-            {
-                output.mMatrix[index(row, col)] = mMatrix[index(row, col)] - rhs.mMatrix[index(row, col)];
-            }
-        }
-        return output;
-    }
-    DenseMatrix operator*(const DenseMatrix& rhs)
-    {
-        if (cols != rhs.rows)
-        {
-            throw range_error("Column count on first matrix does not match row count on second matrix");
-        }
-        DenseMatrix output(rows, cols);
-
-        for (int row = 0; row < rhs.rows; row++)
-        {
-            for (int colRHS = 0; colRHS < rhs.cols; colRHS++)
-            {
-                for (int col = 0; col < cols; col++)
-                {
-                     output.mMatrix[index(row, colRHS)] += mMatrix[index(row, col)] * rhs.mMatrix[index(col, colRHS)];
-                }
-            }
-        }
-
-        return output;
-    }
-    DenseMatrix(const int rows, const int cols) : Matrix(rows, cols), mMatrix(rows * cols, 0) {}
-};
-
-class SparseMatrix : public Matrix
-{
-public:
     vector<int> values;
     vector<int> row_indexes;
     vector<int> col_indexes;
@@ -194,7 +102,19 @@ public:
         }
         return 0;
     }
-    SparseMatrix(const int rows, const int cols, vector<int> values, vector<int> row_indexes, vector<int> col_indexes) : Matrix(rows, cols), values(values), row_indexes(row_indexes), col_indexes(col_indexes) {}
+    void print_string()
+    {
+        stringstream ss;
+        for (int row = 1; row <= rows; row++)
+        {
+            for (int col = 1; col <= cols; col++)
+            {
+                printf("%-5i", get(row, col)); // Use printf for formatting (pad to 5, left align, integers)
+            }
+            cout << endl;
+        }
+    }
+    SparseMatrix(const int rows, const int cols, vector<int> values, vector<int> row_indexes, vector<int> col_indexes) : rows(rows), cols(cols), values(values), row_indexes(row_indexes), col_indexes(col_indexes) {}
 };
 
 int main()
@@ -244,10 +164,15 @@ int main()
     }
     SparseMatrix m2(3, 3, values, row_indexes, col_indexes);
 
-    cout << "Matrix 1" << endl << m.to_string() << endl;
-    cout << "Matrix 2" << endl << m2.to_string() << endl;
-    cout << "Addition" << endl << (m + m2).to_string() << endl;
-    cout << "Subtraction" << endl << (m - m2).to_string() << endl;
-    cout << "Multiplication" << endl << (m * m2).to_string() << endl;
+    cout << "Matrix 1" << endl;
+    m.print_string();
+    cout <<  "Matrix 2" << endl;
+    m2.print_string();
+    cout << "Addition" << endl;
+    (m + m2).print_string();
+    cout << "Subtraction" << endl;
+    (m - m2).print_string();
+    cout << "Multiplication" << endl;
+    (m * m2).print_string();
     return 0;
 }
