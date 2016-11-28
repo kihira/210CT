@@ -9,7 +9,7 @@ using namespace std;
 struct vertice
 {
     int value;
-    vector<vertice*> vertices;
+    vector<vertice*> edges;
     // used for tarjans algo for checking for strong connection
     int index = -1;
     int lowlink = -1;
@@ -30,10 +30,10 @@ public:
             throw invalid_argument("Vertice already exists with value");
         }
         vertice* n = new vertice(value);
-        n->vertices = edges;
+        n->edges = edges;
         for (vertice* adj : edges)
         {
-            adj->vertices.push_back(n);
+            adj->edges.push_back(n);
         }
 
         this->vertices[value] = n;
@@ -56,13 +56,13 @@ public:
 
         outFile << start << endl;
 
-        for (vertice* v : curr->vertices)
+        for (vertice* v : curr->edges)
         {
             if (v->value == target)
             {
                 return true;
             }
-            else if (v->vertices.size() > 0)
+            else if (v->edges.size() > 0)
             {
                 verticesToSearch.push_back(v); // scan over all links start to see if we have a direct connection
             }
@@ -83,7 +83,7 @@ public:
         stack->push(curr);
         curr->inStack = true;
 
-        for (vertice* edge : curr->vertices)
+        for (vertice* edge : curr->edges)
         {
             if (edge->index == -1) // Haven't checked this vertice yet so check
             {
@@ -145,8 +145,8 @@ public:
             }
             vertice* first = this->vertices[edge.first];
             vertice* second = this->vertices[edge.second];
-            first->vertices.push_back(second);
-            second->vertices.push_back(first);
+            first->edges.push_back(second);
+            second->edges.push_back(first);
         }
     }
     ~Graph()
