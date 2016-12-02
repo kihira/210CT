@@ -103,7 +103,7 @@ public:
 
 int main()
 {
-    cout << "Advanced Task 1 - Weighted, Undirected graph" << endl << endl;
+    cout << "Basic Task 1 - Weighted, Undirected graph" << endl << endl;
 
     Graph graph({1, 2, 3, 4, 5}, {make_tuple(1, 2, 1), make_tuple(2, 3, 1), make_tuple(1, 4, 3), make_tuple(3, 4, 0), make_tuple(1, 3, 3)});
 

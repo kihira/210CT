@@ -1,0 +1,13 @@
+BINARY_SEARCH_SEQUENCE(sequence, low, high)
+    IF sequence.length = 0
+        return false
+    midpoint <- sequence.length / 2
+    IF sequence[midpoint] >= low AND sequence[midpoint] <= high
+        return true;
+    IF sequence[midpoint] < low
+        seq <- sequence[midpoint + 1] to sequence[sequence.length]
+        return BINARY_SEARCH_SEQUENCE[seq, low, high]
+    IF sequence[midpoint] > high
+       seq <- sequence[0] to sequence[midpoint]
+       return BINARY_SEARCH_SEQUENCE[seq, low, high]
+    return false

@@ -1,28 +1,28 @@
-GET_COMMON_ELEMENTS(STRING1, STRING2)
-    FOR i <- 0 to STRING1.length
-        char <- STRING1[i]
-        FOR i <- 0 to STRING2.length
-            char2 <- STRING2[i]
+GET_COMMON_ELEMENTS(string1, string2)
+    FOR i <- 0 to string1.length
+        char <- string1[i]
+        FOR i <- 0 to string2.length
+            char2 <- string2[i]
             IF char = char2 AND char_list does not contain char
                 add char to char_list
     RETURN char_list
 
-GET_ALL_ELEMENTS_ONCE(STRING1, STRING2)
-    FOR i <- 0 to STRING1.length
-        char <- STRING1[i]
-        FOR i <- 0 to STRING2.length
-            char2 <- STRING2[i]
+GET_ALL_ELEMENTS_ONCE(string1, string2)
+    FOR i <- 0 to string1.length
+        char <- string1[i]
+        FOR i <- 0 to string2.length
+            char2 <- string2[i]
             IF char_list does not contain char
                 add char to char_list
     RETURN char_list
 
-GET_ELEMENTS_UNIQUE(STRING1, STRING2)
-    FOR i <- 0 to STRING1.length
-        char <- STRING1[i]
+GET_ELEMENTS_UNIQUE(string1, string2)
+    FOR i <- 0 to string1.length
+        char <- string1[i]
         IF char_list does not contain char
             add char to char_list
-    FOR i <- 0 to STRING2.length
-        char <- STRING2[i]
+    FOR i <- 0 to string2.length
+        char <- string2[i]
         IF char_list contains char
             remove char to char_list
     RETURN char_list
