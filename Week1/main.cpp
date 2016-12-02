@@ -14,7 +14,7 @@ public:
     vector<int> values;
     vector<int> row_indexes;
     vector<int> col_indexes;
-    // O(n*3)
+    // O(n*2)
     SparseMatrix operator+(SparseMatrix& rhs)
     {
         if (rows != rhs.rows || cols != rhs.cols)
@@ -35,7 +35,7 @@ public:
         }
         return SparseMatrix(rows, cols, values, row_indexes, col_indexes);
     }
-    // O(n*3)
+    // O(n*2)
     SparseMatrix operator-(SparseMatrix& rhs)
     {
         if (rows != rhs.rows || cols != rhs.cols)
